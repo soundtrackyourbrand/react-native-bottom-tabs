@@ -6,9 +6,11 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.transition.TransitionManager
 import android.util.Log
@@ -338,11 +340,11 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
         applyItem(index, item)
       }
     }
-    // Update tint colors and text appearance after updating all items.
-    post {
-      updateTextAppearance()
-      updateTintColors()
-    }
+    // The item views exist once the batch has been applied. Styling them now, rather than in a
+    // post, means the first frame already shows the final appearance instead of Material's
+    // defaults for a frame.
+    updateTextAppearance()
+    updateTintColors()
   }
 
   private fun applyItem(index: Int, item: TabInfo) {
@@ -464,6 +466,19 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
       }
       menuItem.icon = drawable
       items.getOrNull(index)?.let { updateIconTintMode(menuItem, it) }
+    }
+    if (menuItem.icon == null) {
+      // The icon is arriving asynchronously. Material lays the label out differently for an item
+      // without an icon, so reserve the icon's space to keep the label from moving once it lands.
+      menuItem.icon = placeholderIcon()
+    }
+  }
+
+  private fun placeholderIcon(): Drawable {
+    val size = bottomNavigation.itemIconSize
+    return GradientDrawable().apply {
+      setColor(Color.TRANSPARENT)
+      setSize(size, size)
     }
   }
 
