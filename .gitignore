@@ -85,3 +85,7 @@ android/generated
 
 # Agent Device
 tmp/
+
+# Nix
+.direnv/
+result
