@@ -17,6 +17,7 @@ module.exports = {
   },
   ignorePatterns: [
     '**/lib/**',
+    '**/android/build/**',
     '**/dist/**',
     '**/node_modules/**',
     'expo-env.d.ts',

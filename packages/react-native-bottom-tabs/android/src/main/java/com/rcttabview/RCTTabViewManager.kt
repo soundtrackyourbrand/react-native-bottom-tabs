@@ -204,6 +204,10 @@ class RCTTabViewManager(context: ReactApplicationContext) :
     view?.setTabBarHidden(value)
   }
 
+  override fun setTabBarHideOnKeyboard(view: ReactBottomNavigationView?, value: Boolean) {
+    view?.setTabBarHideOnKeyboard(value)
+  }
+
   // iOS Methods
   override fun setTranslucent(view: ReactBottomNavigationView?, value: Boolean) {
   }

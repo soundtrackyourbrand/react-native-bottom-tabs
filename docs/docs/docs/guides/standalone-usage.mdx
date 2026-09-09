@@ -137,6 +137,13 @@ Whether to enable haptic feedback on tab press.
 - Type: `boolean`
 - Default: `false`
 
+#### `tabBarHideOnKeyboard` <Badge text="Android" type="info" />
+
+Whether to hide the tab bar while the keyboard is shown. With Android's default `adjustResize` window mode the bar is otherwise lifted above the keyboard. The bar is hidden in the same layout pass that resizes the view for the keyboard, so it does not flicker.
+
+- Type: `boolean`
+- Default: `false`
+
 #### `tabLabelStyle`
 
 Object containing styles for the tab label.

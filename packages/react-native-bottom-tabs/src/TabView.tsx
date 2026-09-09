@@ -234,6 +234,13 @@ interface Props<Route extends BaseRoute> {
    * Whether to hide the native tab bar.
    */
   tabBarHidden?: boolean;
+  /**
+   * Whether to hide the tab bar while the keyboard is shown. Android only:
+   * with `adjustResize` the bar is otherwise lifted above the keyboard.
+   *
+   * @platform android
+   */
+  tabBarHideOnKeyboard?: boolean;
 }
 
 const ANDROID_MAX_TABS = 100;
@@ -272,6 +279,7 @@ const TabView = <Route extends BaseRoute>({
   getFreezeOnBlur = ({ route }: { route: Route }) => route.freezeOnBlur,
   tabBar: renderCustomTabBar,
   tabBarHidden,
+  tabBarHideOnKeyboard,
   tabBarStyle,
   tabLabelStyle,
   renderBottomAccessoryView,
@@ -465,6 +473,7 @@ const TabView = <Route extends BaseRoute>({
         }
         selectedPage={focusedKey}
         tabBarHidden={tabBarHidden ?? !!renderCustomTabBar}
+        tabBarHideOnKeyboard={tabBarHideOnKeyboard}
         onTabLongPress={handleTabLongPress}
         onPageSelected={handlePageSelected}
         onTabBarMeasured={handleTabBarMeasured}

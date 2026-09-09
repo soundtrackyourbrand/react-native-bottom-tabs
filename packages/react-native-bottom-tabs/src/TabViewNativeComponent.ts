@@ -48,6 +48,7 @@ export interface TabViewProps extends ViewProps {
   icons?: ReadonlyArray<ImageSource>;
   focusedIcons?: ReadonlyArray<ImageSource>;
   tabBarHidden?: boolean;
+  tabBarHideOnKeyboard?: boolean;
   labeled?: boolean;
   sidebarAdaptable?: boolean;
   scrollEdgeAppearance?: string;

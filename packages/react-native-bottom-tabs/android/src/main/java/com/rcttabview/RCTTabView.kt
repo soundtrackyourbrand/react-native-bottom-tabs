@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.forEachIndexed
 import coil3.ImageLoader
@@ -50,6 +51,7 @@ class ExtendedBottomNavigationView(context: Context) : BottomNavigationView(cont
 
 class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
   private var bottomNavigation = ExtendedBottomNavigationView(context)
+  private val tabBarVisibility = TabBarVisibility()
   val layoutHolder = FrameLayout(context)
 
   var onTabSelectedListener: ((key: String) -> Unit)? = null
@@ -134,6 +136,18 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
 
   fun applyDirection(dir: Int) {
       bottomNavigation.layoutDirection = dir   
+  }
+
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    // With `adjustResize` the keyboard shrinks this view through a layout commit, so the bar's
+    // visibility is decided in that same measure pass. Hiding it from JS reaches the view at least
+    // a frame later, and in between the bar renders lifted above the keyboard.
+    if (tabBarVisibility.hideOnKeyboard) {
+      tabBarVisibility.keyboardVisible =
+        ViewCompat.getRootWindowInsets(this)?.isVisible(WindowInsetsCompat.Type.ime()) == true
+      applyTabBarVisibility()
+    }
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec)
   }
 
   override fun requestLayout() {
@@ -231,11 +245,17 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
   }
 
   fun setTabBarHidden(isHidden: Boolean) {
-    if (isHidden) {
-      bottomNavigation.visibility = GONE
-    } else {
-      bottomNavigation.visibility = VISIBLE
-    }
+    tabBarVisibility.hidden = isHidden
+    applyTabBarVisibility()
+  }
+
+  fun setTabBarHideOnKeyboard(value: Boolean) {
+    tabBarVisibility.hideOnKeyboard = value
+    applyTabBarVisibility()
+  }
+
+  private fun applyTabBarVisibility() {
+    bottomNavigation.visibility = if (tabBarVisibility.isVisible) VISIBLE else GONE
   }
 
   fun updateItems(items: MutableList<TabInfo>) {
