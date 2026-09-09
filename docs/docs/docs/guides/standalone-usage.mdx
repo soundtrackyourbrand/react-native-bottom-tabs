@@ -242,7 +242,7 @@ Each route in the `routes` array can have the following properties:
 - `key`: Unique identifier for the route
 - `title`: Display title for the tab
 - `focusedIcon`: Icon to show when tab is active
-- `unfocusedIcon`: Icon to show when tab is inactive (optional)
+- `unfocusedIcon`: Icon to show when tab is inactive (optional). Icons referenced by name (`{ uri: 'tab_person' }`) are loaded synchronously from the app's native resources: a drawable on Android and an asset catalog image on iOS.
 - `iconRenderingMode`: Rendering mode for icons. Use `'original'` to preserve multicolor icons instead of applying the native tab tint.
 - `badge`: Badge text to display on the tab
 - `activeTintColor`: Custom active tint color for this specific tab

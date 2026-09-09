@@ -1,9 +1,11 @@
 package com.rcttabview
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -20,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.ViewCompat
@@ -395,9 +398,39 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
     }
   }
 
+  /**
+   * An XML drawable resource referenced by name (`{ uri: 'tab_home' }`), such as a vector
+   * drawable, is inflated right here instead of going through Coil: it inflates in well under a
+   * millisecond, keeps Material's tint, and being in the first frame avoids the labels moving once
+   * icons arrive asynchronously. Bitmap drawables and SVGs in `res/raw` stay with Coil, which
+   * decodes them off the main thread.
+   */
+  private fun inflateXmlDrawable(imageSource: ImageSource): Drawable? {
+    val uri = imageSource.getUri(context) ?: return null
+    if (uri.scheme != ContentResolver.SCHEME_ANDROID_RESOURCE) {
+      return null
+    }
+    val resId = uri.lastPathSegment?.toIntOrNull() ?: return null
+    val value = TypedValue()
+    try {
+      context.resources.getValue(resId, value, true)
+    } catch (e: Resources.NotFoundException) {
+      return null
+    }
+    if (value.string?.endsWith(".xml") != true) {
+      return null
+    }
+    return ResourcesCompat.getDrawable(context.resources, resId, context.theme)?.mutate()
+  }
+
   @SuppressLint("CheckResult")
   private fun getDrawable(imageSource: ImageSource, onDrawableReady: (Drawable?) -> Unit) {
     drawableCache[imageSource]?.let {
+      onDrawableReady(it)
+      return
+    }
+    inflateXmlDrawable(imageSource)?.let {
+      drawableCache[imageSource] = it
       onDrawableReady(it)
       return
     }

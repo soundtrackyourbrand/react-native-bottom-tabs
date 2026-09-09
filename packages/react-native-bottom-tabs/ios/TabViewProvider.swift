@@ -302,6 +302,14 @@ public final class TabInfo: NSObject {
     if let imageSources = icons as? [RCTImageSource?] {
       for (index, imageSource) in imageSources.enumerated() {
         guard let imageSource else { continue }
+        // Images in the app bundle, including asset catalog images referenced by
+        // name (`{ uri: 'tab_home' }`), are loaded right here so the first frame
+        // shows them. The image loader only handles what has to be fetched or
+        // decoded asynchronously.
+        if let url = imageSource.request.url, url.isFileURL, let image = RCTImageFromLocalAssetURL(url) {
+          setIcon(image, at: index, focused: focused)
+          continue
+        }
         imageLoader.loadImage(
           with: imageSource.request,
           size: imageSource.size,
@@ -317,35 +325,26 @@ public final class TabInfo: NSObject {
             }
             guard let image else { return }
             DispatchQueue.main.async { [weak self] in
-              guard let self else { return }
-              let icon = image.resizeImageTo(size: iconSize)
-              #if os(iOS)
-                if props.experimentalBakedTintColors {
-                  if focused {
-                    props.focusedIcons[index] = icon?.withRenderingMode(.alwaysTemplate)
-                  } else {
-                    props.icons[index] = icon?.withRenderingMode(.alwaysTemplate)
-                  }
-                } else {
-                  if focused {
-                    props.focusedIcons[index] = icon
-                  } else {
-                    props.icons[index] = icon
-                  }
-                }
-                props.iconsRevision += 1
-              #else
-                if focused {
-                  props.focusedIcons[index] = icon
-                } else {
-                  props.icons[index] = icon
-                }
-                props.iconsRevision += 1
-              #endif
+              self?.setIcon(image, at: index, focused: focused)
             }
           })
       }
     }
+  }
+
+  private func setIcon(_ image: PlatformImage, at index: Int, focused: Bool) {
+    var icon = image.resizeImageTo(size: iconSize)
+    #if os(iOS)
+      if props.experimentalBakedTintColors {
+        icon = icon?.withRenderingMode(.alwaysTemplate)
+      }
+    #endif
+    if focused {
+      props.focusedIcons[index] = icon
+    } else {
+      props.icons[index] = icon
+    }
+    props.iconsRevision += 1
   }
 }
 

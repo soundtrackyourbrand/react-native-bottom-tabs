@@ -282,12 +282,18 @@ Function that given `{ focused: boolean }` returns `ImageSource` or `AppleIcon` 
     tabBarIcon: () => ({ sfSymbol: 'person' }),
     // You can also pass a URL
     tabBarIcon: () => ({ uri: 'https://example.com/icon.png' }),
+    // or the name of a native image resource
+    tabBarIcon: () => ({ uri: 'tab_person' }),
   }}
 />
 ```
 
 :::note
 SF Symbols are only supported on Apple platforms.
+:::
+
+:::tip
+An icon referenced by name (`{ uri: 'tab_person' }`) is loaded from the app's native resources: a drawable on Android and an asset catalog image on iOS. These load synchronously, so the icons are part of the tab bar's first frame instead of appearing once an asynchronous load finishes. Vector drawables and template images take the tab tint like any other icon.
 :::
 
 #### `tabBarIconRenderingMode`
