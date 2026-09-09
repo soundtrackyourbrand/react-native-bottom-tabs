@@ -61,6 +61,9 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
   var disablePageAnimations = false
   var items: MutableList<TabInfo> = mutableListOf()
   private val iconSources: MutableMap<Int, ImageSource> = mutableMapOf()
+  // Icon loads finish asynchronously and can complete out of order, so a menu item only takes
+  // the result of the newest load started for it.
+  private val iconLoads = LatestRequestTracker<Int>()
   private val drawableCache: MutableMap<ImageSource, Drawable> = mutableMapOf()
 
   private var isLayoutEnqueued = false
@@ -272,12 +275,7 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
 
       menuItem.isVisible = !item.hidden
       updateIconTintMode(menuItem, item)
-      if (iconSources.containsKey(index)) {
-        getDrawable(iconSources[index]!!) {
-          menuItem.icon = it
-          updateIconTintMode(menuItem, item)
-        }
-      }
+      iconSources[index]?.let { loadMenuItemIcon(index, menuItem, it) }
 
       if (item.badge?.isNotEmpty() == true) {
         val badge = bottomNavigation.getOrCreateBadge(index)
@@ -362,12 +360,7 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
 
       // Update existing item if exists.
       bottomNavigation.menu.findItem(idx)?.let { menuItem ->
-        getDrawable(imageSource) {
-          menuItem.icon = it
-          items.getOrNull(idx)?.let { item ->
-            updateIconTintMode(menuItem, item)
-          }
-        }
+        loadMenuItemIcon(idx, menuItem, imageSource)
       }
     }
   }
@@ -389,6 +382,17 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
 
   fun setRippleColor(color: ColorStateList) {
     bottomNavigation.itemRippleColor = color
+  }
+
+  private fun loadMenuItemIcon(index: Int, menuItem: MenuItem, imageSource: ImageSource) {
+    val loadId = iconLoads.begin(index)
+    getDrawable(imageSource) { drawable ->
+      if (!iconLoads.isLatest(index, loadId)) {
+        return@getDrawable
+      }
+      menuItem.icon = drawable
+      items.getOrNull(index)?.let { updateIconTintMode(menuItem, it) }
+    }
   }
 
   @SuppressLint("CheckResult")
