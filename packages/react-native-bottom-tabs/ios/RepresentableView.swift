@@ -22,7 +22,7 @@ struct RepresentableView: PlatformViewRepresentable {
 
   func makeUIView(context: Context) -> PlatformView {
     let wrapper = UIView()
-    detachStaleViewControllers(in: view)
+    Self.detachStaleViewControllers(in: view)
     wrapper.addSubview(view)
     return wrapper
   }
@@ -38,7 +38,7 @@ struct RepresentableView: PlatformViewRepresentable {
    UIKit's hierarchy consistency check and crashes. Detaching the stale
    children first lets them re-attach to the new host on their own.
    */
-  private func detachStaleViewControllers(in view: UIView) {
+  static func detachStaleViewControllers(in view: UIView) {
     for subview in view.subviews {
       if let controller = subview.next as? UIViewController, controller.view === subview {
         if controller.parent != nil {

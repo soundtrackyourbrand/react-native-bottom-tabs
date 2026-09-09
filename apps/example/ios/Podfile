@@ -19,5 +19,22 @@ use_test_app!(
         config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
       end
     end
+    # React Native raises the pods' deployment target to its minimum but leaves
+    # test targets at the podspec's, and a test bundle cannot link a module
+    # built for a newer iOS than itself.
+    targets = installer.pods_project.targets
+    library = targets.find { |target| target.name == 'react-native-bottom-tabs' }
+    tests = targets.find { |target| target.name == 'react-native-bottom-tabs-Unit-Tests' }
+    if library && tests
+      tests.build_configurations.each do |config|
+        library_config = library.build_configurations.find { |c| c.name == config.name }
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = library_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      end
+    end
   }
-)
+) do |target|
+  target.app do
+    # The library's unit tests, run with `xcodebuild test -scheme react-native-bottom-tabs`
+    pod 'react-native-bottom-tabs', :path => '../../../packages/react-native-bottom-tabs', :testspecs => ['Tests']
+  end
+end

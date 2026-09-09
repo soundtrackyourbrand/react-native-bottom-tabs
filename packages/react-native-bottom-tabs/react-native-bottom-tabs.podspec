@@ -18,7 +18,15 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/okwasniewski/react-native-bottom-tabs.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp,swift}"
+  s.exclude_files = "ios/Tests/**"
   s.static_framework = true
+
+  # Unit tests, run from the example app, whose Podfile declares this pod with `:testspecs => ['Tests']`:
+  # `pod install` in apps/example/ios, then
+  # `xcodebuild test -workspace ReactNativeBottomTabsExample.xcworkspace -scheme react-native-bottom-tabs -destination 'platform=iOS Simulator,id=<simulator udid>'`
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = "ios/Tests/**/*.swift"
+  end
 
   s.subspec "common" do |ss|
     ss.source_files         = "common/cpp/**/*.{cpp,h}"
