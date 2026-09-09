@@ -59,11 +59,6 @@ class RCTTabViewManager(context: ReactApplicationContext) :
 
   }
 
-  override fun onDropViewInstance(view: ReactBottomNavigationView) {
-    super.onDropViewInstance(view)
-    view.onDropViewInstance()
-  }
-
   override fun getName(): String {
     return NAME
   }

@@ -47,6 +47,8 @@ import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_LABELED
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
 import com.google.android.material.transition.platform.MaterialFadeThrough
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * Material rebuilds every item view each time the menu changes, so adding the tabs one by one
@@ -129,11 +131,26 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
   private var hasCustomAppearance = false
   private var uiModeConfiguration: Int = Configuration.UI_MODE_NIGHT_UNDEFINED
 
-  private val imageLoader = ImageLoader.Builder(context)
-    .components {
-      add(SvgDecoder.Factory())
-    }
-    .build()
+  private companion object {
+    /**
+     * Icons are decoded off the main thread. The Coil loader is shared by all tab bars and
+     * built on this thread the first time an icon is requested, so creating a tab bar costs
+     * neither Coil's setup nor its class loading.
+     */
+    private val iconExecutor: ExecutorService =
+      Executors.newSingleThreadExecutor { Thread(it, "rcttabview-icons") }
+
+    private var sharedImageLoader: ImageLoader? = null
+
+    /** Only called on [iconExecutor]. */
+    private fun imageLoader(context: Context): ImageLoader =
+      sharedImageLoader ?: ImageLoader.Builder(context.applicationContext)
+        .components {
+          add(SvgDecoder.Factory())
+        }
+        .build()
+        .also { sharedImageLoader = it }
+  }
 
   init {
     orientation = VERTICAL
@@ -506,7 +523,9 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
       )
       .build()
 
-    imageLoader.enqueue(request)
+    iconExecutor.execute {
+      imageLoader(context).enqueue(request)
+    }
   }
 
   fun setBarTintColor(color: Int?) {
@@ -550,10 +569,6 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
     val fontWeight = ReactTypefaceUtils.parseFontWeight(weight)
     this.fontWeight = fontWeight
     updateTextAppearance()
-  }
-
-  fun onDropViewInstance() {
-    imageLoader.shutdown()
   }
 
   private fun updateTextAppearance() {
