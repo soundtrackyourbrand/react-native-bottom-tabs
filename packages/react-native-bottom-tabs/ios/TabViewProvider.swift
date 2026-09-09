@@ -55,7 +55,8 @@ public final class TabInfo: NSObject {
   private var imageLoader: RCTImageLoaderProtocol?
   private weak var delegate: TabViewProviderDelegate?
   private var props = TabViewProps()
-  private var hostingController: PlatformHostingController<TabViewImpl>?
+  private var hostingController: TabViewHostingController?
+  private var appearanceFixScheduled = false
   private var coalescingKey: UInt16 = 0
   private var iconSize = CGSize(width: 27, height: 27)
 
@@ -208,6 +209,43 @@ public final class TabInfo: NSObject {
   override public func layoutSubviews() {
     super.layoutSubviews()
     setupView()
+    ensureHostingControllerAppeared()
+  }
+
+  /**
+   UIKit forwards appearance callbacks to a child controller added while its
+   parent is on screen, but not to one added while the parent is still
+   transitioning in, e.g. when the tab view mounts during a native-stack
+   replace animation. The host then stays "disappeared" and its view keeps
+   zero safe-area insets, so the tab bar and the tabs' navigation bars ignore
+   the notch and home indicator. Runs the missing transition once the parent
+   has settled.
+   */
+  private func ensureHostingControllerAppeared() {
+    guard let host = hostingController, !host.hasAppeared, !appearanceFixScheduled, window != nil else {
+      return
+    }
+    appearanceFixScheduled = true
+    if let coordinator = host.parent?.transitionCoordinator {
+      coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+        self?.appearanceFixScheduled = false
+        self?.ensureHostingControllerAppeared()
+      }
+      return
+    }
+    // Deferred a run-loop turn so an appearance transition UIKit is about to
+    // forward itself takes precedence over the manual one.
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let host = self.hostingController else { return }
+      self.appearanceFixScheduled = false
+      guard !host.hasAppeared, self.window != nil, let parent = host.parent else { return }
+      if parent.transitionCoordinator != nil {
+        self.ensureHostingControllerAppeared()
+        return
+      }
+      host.beginAppearanceTransition(true, animated: false)
+      host.endAppearanceTransition()
+    }
   }
 #endif
 
@@ -216,7 +254,7 @@ public final class TabInfo: NSObject {
       return
     }
 
-    self.hostingController = PlatformHostingController(rootView: TabViewImpl(props: props) { key in
+    self.hostingController = TabViewHostingController(rootView: TabViewImpl(props: props) { key in
       self.delegate?.onPageSelected(key: key, reactTag: self.reactTag)
     } onLongPress: { key in
       self.delegate?.onLongPress(key: key, reactTag: self.reactTag)
@@ -310,3 +348,22 @@ public final class TabInfo: NSObject {
     }
   }
 }
+
+#if os(macOS)
+typealias TabViewHostingController = NSHostingController<TabViewImpl>
+#else
+/// Tracks appearance so `TabViewProvider` can detect a host UIKit never transitioned in.
+final class TabViewHostingController: UIHostingController<TabViewImpl> {
+  private(set) var hasAppeared = false
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    hasAppeared = true
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    hasAppeared = false
+  }
+}
+#endif
