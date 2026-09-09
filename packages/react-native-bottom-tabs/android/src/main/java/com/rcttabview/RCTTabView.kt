@@ -40,13 +40,58 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.views.text.ReactTypefaceUtils
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarMenuView
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_AUTO
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_LABELED
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
 import com.google.android.material.transition.platform.MaterialFadeThrough
 
+/**
+ * Material rebuilds every item view each time the menu changes, so adding the tabs one by one
+ * inflates 1 + 2 + … + n item views. This menu view holds the rebuild while a batch of changes
+ * is applied and runs it once afterwards.
+ */
+@SuppressLint("RestrictedApi")
+class BatchingBottomNavigationMenuView(context: Context) : BottomNavigationMenuView(context) {
+  private val rebuilds = RebuildBatch()
+
+  override fun buildMenuView() {
+    if (rebuilds.shouldRebuildNow()) {
+      super.buildMenuView()
+    }
+  }
+
+  fun beginBatch() {
+    rebuilds.begin()
+  }
+
+  fun endBatch() {
+    if (rebuilds.end()) {
+      buildMenuView()
+    }
+  }
+}
+
 class ExtendedBottomNavigationView(context: Context) : BottomNavigationView(context) {
+  @SuppressLint("RestrictedApi")
+  override fun createNavigationBarMenuView(context: Context): NavigationBarMenuView {
+    return BatchingBottomNavigationMenuView(context)
+  }
+
+  /** Applies [block]'s menu changes with a single rebuild of the item views. */
+  @SuppressLint("RestrictedApi")
+  fun batchMenuChanges(block: () -> Unit) {
+    val menuView = menuView as? BatchingBottomNavigationMenuView
+    menuView?.beginBatch()
+    try {
+      block()
+    } finally {
+      menuView?.endBatch()
+    }
+  }
+
   override fun getMaxItemCount(): Int {
     return 100
   }
@@ -265,55 +310,62 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
   }
 
   fun updateItems(items: MutableList<TabInfo>) {
-    // If an item got removed, let's re-add all items
-    if (items.size < this.items.size) {
-      bottomNavigation.menu.clear()
-    }
+    val removedItems = items.size < this.items.size
     this.items = items
-    items.forEachIndexed { index, item ->
-      val menuItem = getOrCreateItem(index, item.title)
-      if (item.title !== menuItem.title) {
-        menuItem.title = item.title
+    bottomNavigation.batchMenuChanges {
+      // If an item got removed, let's re-add all items
+      if (removedItems) {
+        bottomNavigation.menu.clear()
       }
-
-      menuItem.isVisible = !item.hidden
-      updateIconTintMode(menuItem, item)
-      iconSources[index]?.let { loadMenuItemIcon(index, menuItem, it) }
-
-      if (item.badge?.isNotEmpty() == true) {
-        val badge = bottomNavigation.getOrCreateBadge(index)
-        badge.isVisible = true
-        // Set the badge text only if it's different than an empty space to show a small badge.
-        // More context: https://github.com/callstackincubator/react-native-bottom-tabs/issues/422
-        if (item.badge != " ") {
-          badge.text = item.badge
-        }
-        // Apply badge colors if provided (Material will use its default theme colors otherwise)
-        item.badgeBackgroundColor?.let { badge.backgroundColor = it }
-        item.badgeTextColor?.let { badge.badgeTextColor = it }
-      } else {
-        bottomNavigation.removeBadge(index)
-      }
-      post {
-        val itemView = bottomNavigation.findViewById<View>(menuItem.itemId)
-        itemView?.let { view ->
-          view.setOnLongClickListener {
-            onTabLongPressed(menuItem)
-            true
-          }
-          view.setOnClickListener {
-            onTabSelected(menuItem)
-          }
-
-          view.findViewById<View>(com.google.android.material.R.id.navigation_bar_item_content_container)
-            ?.setTabTestID(item.testID)
-        }
+      items.forEachIndexed { index, item ->
+        applyItem(index, item)
       }
     }
     // Update tint colors and text appearance after updating all items.
     post {
       updateTextAppearance()
       updateTintColors()
+    }
+  }
+
+  private fun applyItem(index: Int, item: TabInfo) {
+    val menuItem = getOrCreateItem(index, item.title)
+    if (item.title !== menuItem.title) {
+      menuItem.title = item.title
+    }
+
+    menuItem.isVisible = !item.hidden
+    updateIconTintMode(menuItem, item)
+    iconSources[index]?.let { loadMenuItemIcon(index, menuItem, it) }
+
+    if (item.badge?.isNotEmpty() == true) {
+      val badge = bottomNavigation.getOrCreateBadge(index)
+      badge.isVisible = true
+      // Set the badge text only if it's different than an empty space to show a small badge.
+      // More context: https://github.com/callstackincubator/react-native-bottom-tabs/issues/422
+      if (item.badge != " ") {
+        badge.text = item.badge
+      }
+      // Apply badge colors if provided (Material will use its default theme colors otherwise)
+      item.badgeBackgroundColor?.let { badge.backgroundColor = it }
+      item.badgeTextColor?.let { badge.badgeTextColor = it }
+    } else {
+      bottomNavigation.removeBadge(index)
+    }
+    post {
+      val itemView = bottomNavigation.findViewById<View>(menuItem.itemId)
+      itemView?.let { view ->
+        view.setOnLongClickListener {
+          onTabLongPressed(menuItem)
+          true
+        }
+        view.setOnClickListener {
+          onTabSelected(menuItem)
+        }
+
+        view.findViewById<View>(com.google.android.material.R.id.navigation_bar_item_content_container)
+          ?.setTabTestID(item.testID)
+      }
     }
   }
 
