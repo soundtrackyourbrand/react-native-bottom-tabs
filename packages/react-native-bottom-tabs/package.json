@@ -1,6 +1,6 @@
 {
   "name": "@soundtrackio/react-native-bottom-tabs",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Native Bottom Tabs for React Native (Soundtrack Your Brand's fork)",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
