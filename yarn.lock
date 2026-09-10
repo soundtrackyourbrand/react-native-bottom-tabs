@@ -3116,7 +3116,7 @@ __metadata:
     jest: "npm:^29.7.0"
     react: "npm:^19.1.0"
     react-native: "npm:0.81.1"
-    react-native-bottom-tabs: "npm:*"
+    react-native-bottom-tabs: "workspace:packages/react-native-bottom-tabs"
     react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:^5.9.2"
   peerDependencies:
@@ -6931,6 +6931,31 @@ __metadata:
   checksum: 10/78155c7bd866a85df85e22028e046b8d46cf3e840f72260954f5e3ed5bd97d66c595524305a6841ffb3f681a08f6e5cef572a2cce5442a8a232dc29fb409b83e
   languageName: node
   linkType: hard
+
+"@soundtrackio/react-native-bottom-tabs@workspace:packages/react-native-bottom-tabs, react-native-bottom-tabs@workspace:packages/react-native-bottom-tabs":
+  version: 0.0.0-use.local
+  resolution: "@soundtrackio/react-native-bottom-tabs@workspace:packages/react-native-bottom-tabs"
+  dependencies:
+    "@expo/config-plugins": "npm:^7.0.0 || ^8.0.0"
+    "@react-native/babel-plugin-codegen": "npm:0.81.1"
+    "@react-native/eslint-config": "npm:0.81.1"
+    "@types/jest": "npm:^29.5.5"
+    "@types/react": "npm:^18.2.44"
+    "@types/react-test-renderer": "npm:^19.1.0"
+    jest: "npm:^29.7.0"
+    react: "npm:^19.1.0"
+    react-freeze: "npm:^1.0.0"
+    react-native: "npm:0.81.1"
+    react-native-builder-bob: "npm:^0.40.13"
+    react-test-renderer: "npm:19.1.0"
+    sf-symbols-typescript: "npm:^2.0.0"
+    typescript: "npm:^5.9.2"
+    use-latest-callback: "npm:^0.2.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
 
 "@swc/helpers@npm:^0.5.17":
   version: 0.5.17
@@ -17178,7 +17203,7 @@ __metadata:
     color: "npm:^5.0.0"
     react: "npm:^19.2.3"
     react-native: "npm:^0.87.1"
-    react-native-bottom-tabs: "npm:*"
+    react-native-bottom-tabs: "workspace:packages/react-native-bottom-tabs"
     react-native-builder-bob: "npm:^0.40.13"
     react-native-edge-to-edge: "npm:^1.7.0"
     react-native-gesture-handler: "npm:^3.2.1"
@@ -17192,30 +17217,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-bottom-tabs@npm:*, react-native-bottom-tabs@npm:1.4.0, react-native-bottom-tabs@workspace:packages/react-native-bottom-tabs":
-  version: 0.0.0-use.local
-  resolution: "react-native-bottom-tabs@workspace:packages/react-native-bottom-tabs"
+"react-native-bottom-tabs@npm:1.4.0":
+  version: 1.4.0
+  resolution: "react-native-bottom-tabs@npm:1.4.0"
   dependencies:
-    "@expo/config-plugins": "npm:^7.0.0 || ^8.0.0"
-    "@react-native/babel-plugin-codegen": "npm:0.81.1"
-    "@react-native/eslint-config": "npm:0.81.1"
-    "@types/jest": "npm:^29.5.5"
-    "@types/react": "npm:^18.2.44"
-    "@types/react-test-renderer": "npm:^19.1.0"
-    jest: "npm:^29.7.0"
-    react: "npm:^19.1.0"
     react-freeze: "npm:^1.0.0"
-    react-native: "npm:0.81.1"
-    react-native-builder-bob: "npm:^0.40.13"
-    react-test-renderer: "npm:19.1.0"
     sf-symbols-typescript: "npm:^2.0.0"
-    typescript: "npm:^5.9.2"
     use-latest-callback: "npm:^0.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  languageName: unknown
-  linkType: soft
+  checksum: 10/1e04140ba421fd943731f177a99653b7d8a0ef60f52887c4a3ec9fc6124b009248144309d5678dd74d1bdaaf98145e929bec0a4da0576e21cbc6074e83a3bb8b
+  languageName: node
+  linkType: hard
 
 "react-native-builder-bob@npm:^0.40.13":
   version: 0.40.13

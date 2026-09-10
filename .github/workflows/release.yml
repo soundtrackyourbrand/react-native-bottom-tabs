@@ -25,6 +25,10 @@ jobs:
           check-latest: true
           node-version-file: '.nvmrc'
 
+      # Trusted publishing (OIDC) needs npm 11.5.1 or newer
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Install Dependencies
         run: yarn
 
