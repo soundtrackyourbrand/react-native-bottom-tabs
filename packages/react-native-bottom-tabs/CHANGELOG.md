@@ -1,5 +1,33 @@
 # react-native-bottom-tabs
 
+## 1.5.0
+
+### Minor Changes
+
+- [`0d1bf58`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/0d1bf5873f8c4dea545ba7100358f30e80b1f56f) Thanks [@emma-syb](https://github.com/emma-syb)! - Load icons referenced by name (`{ uri: 'tab_home' }`) synchronously from native resources, an Android drawable or an iOS asset catalog image, so they are shown in the tab bar's first frame
+
+- [#1](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/pull/1) [`3460132`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/3460132af2593cfb21c12179790b6a6aaad6bace) Thanks [@emma-syb](https://github.com/emma-syb)! - Add `RCTTabViewPrewarm` on Android, which builds a tab bar with placeholder items while the main thread is idle during startup so the first screen's mount does not pay Material's inflation
+
+- [`6b8a753`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/6b8a7539e1a74db73c4fbfd494e4a1c280fa287a) Thanks [@emma-syb](https://github.com/emma-syb)! - Add a `tabBarHideOnKeyboard` prop that hides the tab bar while the keyboard is shown on Android, where `adjustResize` would otherwise lift the bar above the keyboard
+
+### Patch Changes
+
+- [#568](https://github.com/callstack/react-native-bottom-tabs/pull/568) [`251bc1e`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/251bc1e362d0814a742c45cc6fb4f2e3169fea9c) Thanks [@gabrieldonadel](https://github.com/gabrieldonadel)! - Fix Android build with AGP 9 built-in Kotlin: skip applying the `kotlin-android` plugin when AGP has already registered the `kotlin` extension
+
+- [`4f958c9`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/4f958c9da2a17f31024173699fa43a7fc4d8b728) Thanks [@emma-syb](https://github.com/emma-syb)! - Build the Android tab bar's item views once per update instead of once per tab, which cuts the time to create a tab bar roughly in half
+
+- [`690c621`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/690c6219c0fb0b37eb0f270f8c4738f8698250e5) Thanks [@emma-syb](https://github.com/emma-syb)! - Fix an iOS crash (`UIViewControllerHierarchyInconsistency`) when a tab is hidden and shown again while its content is managed by a child view controller, e.g. a react-native-screens native stack
+
+- [`264599a`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/264599a0f3352ec6b36fd38f3f899e16a1b60f36) Thanks [@emma-syb](https://github.com/emma-syb)! - Fix Android tab icons showing an outdated image when icons change quickly and an older load finishes after a newer one
+
+- [`4df4e07`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/4df4e07f9e657db059383a99890577b89eb34e2d) Thanks [@emma-syb](https://github.com/emma-syb)! - Share one Coil image loader across Android tab bars, built off the main thread on first use, instead of creating one per tab bar while it is being created
+
+- [`2865708`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/2865708cb16fdae313c195c146b300f67ef2ae03) Thanks [@emma-syb](https://github.com/emma-syb)! - Keep Android tab labels in place while the tab bar loads: text appearance and tint colors are applied before the first frame, and items whose icon is still loading reserve the icon's space
+
+- [`bc9040f`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/bc9040fbe8da4192721548af2dcb51204dad6fab) Thanks [@emma-syb](https://github.com/emma-syb)! - Fix missing safe-area insets on iOS when the tab view mounts while its parent screen is still transitioning in, which left the tab bar and the tabs' navigation bars under the status bar and home indicator
+
+- [#571](https://github.com/callstack/react-native-bottom-tabs/pull/571) [`6b8e865`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/6b8e865af0b795eeeb11265fa103c818013bcd6e) Thanks [@thiagobrez](https://github.com/thiagobrez)! - Add support for React Native 0.87
+
 ## 1.4.0
 
 ### Minor Changes
