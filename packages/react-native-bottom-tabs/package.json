@@ -1,7 +1,7 @@
 {
-  "name": "react-native-bottom-tabs",
+  "name": "@soundtrackio/react-native-bottom-tabs",
   "version": "1.4.0",
-  "description": "Native Bottom Tabs for React Native",
+  "description": "Native Bottom Tabs for React Native (Soundtrack Your Brand's fork)",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -50,14 +50,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/callstack/react-native-bottom-tabs.git"
+    "url": "git+https://github.com/soundtrackyourbrand/react-native-bottom-tabs.git"
   },
   "author": "Oskar Kwasniewski <oskarkwasniewski@icloud.com> (https://github.com/okwasniewski)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/callstack/react-native-bottom-tabs/issues"
+    "url": "https://github.com/soundtrackyourbrand/react-native-bottom-tabs/issues"
   },
-  "homepage": "https://github.com/callstack/react-native-bottom-tabs#readme",
+  "homepage": "https://github.com/soundtrackyourbrand/react-native-bottom-tabs#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
