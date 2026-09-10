@@ -39,7 +39,7 @@ class RCTTabViewManager(context: ReactApplicationContext) :
     RNCTabViewManagerDelegate(this)
 
   override fun createViewInstance(context: ThemedReactContext): ReactBottomNavigationView {
-    val view = ReactBottomNavigationView(context)
+    val view = RCTTabViewPrewarm.take(context) ?: ReactBottomNavigationView(context)
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
     view.onTabSelectedListener = { key ->
       eventDispatcher?.dispatchEvent(PageSelectedEvent(viewTag = view.id, key))

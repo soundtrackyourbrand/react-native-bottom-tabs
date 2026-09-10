@@ -339,6 +339,11 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
       items.forEachIndexed { index, item ->
         applyItem(index, item)
       }
+      // Drop items beyond the current tabs: placeholders from a prewarm, or tabs that were removed
+      val menu = bottomNavigation.menu
+      for (i in menu.size() - 1 downTo items.size) {
+        menu.removeItem(menu.getItem(i).itemId)
+      }
     }
     // The item views exist once the batch has been applied. Styling them now, rather than in a
     // post, means the first frame already shows the final appearance instead of Material's
@@ -471,6 +476,18 @@ class ReactBottomNavigationView(context: Context) : LinearLayout(context) {
       // The icon is arriving asynchronously. Material lays the label out differently for an item
       // without an icon, so reserve the icon's space to keep the label from moving once it lands.
       menuItem.icon = placeholderIcon()
+    }
+  }
+
+  /**
+   * Inflates [count] placeholder items so that a later [updateItems] only has to fill in titles
+   * and icons instead of building the item views.
+   */
+  fun prewarmItems(count: Int) {
+    bottomNavigation.batchMenuChanges {
+      for (index in 0 until count) {
+        bottomNavigation.menu.add(0, index, 0, "").icon = placeholderIcon()
+      }
     }
   }
 
