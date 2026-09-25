@@ -1,5 +1,13 @@
 # react-native-bottom-tabs
 
+## 1.6.0
+
+### Minor Changes
+
+- [#585](https://github.com/callstack/react-native-bottom-tabs/pull/585) [`b044dbd`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/b044dbd5beff4696c4ed19fd2915009b31e6f03a) Thanks [@retyui](https://github.com/retyui)! - Add the `prominent` tab role (iOS 27+), and fix iOS 27 tabs keeping their selected tint after switching tabs or minimizing the tab bar
+
+- [#575](https://github.com/callstack/react-native-bottom-tabs/pull/575) [`85e14d7`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/85e14d797905a483628cea7668a63fabafe4c78f) Thanks [@thiagobrez](https://github.com/thiagobrez)! - Add iOS Swift Package Manager support
+
 ## 1.5.0
 
 ### Minor Changes
