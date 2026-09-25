@@ -22,6 +22,9 @@ module.exports = function (api) {
       })
       .filter(Boolean)
   );
+  // The examples import this fork's @soundtrackio/react-native-bottom-tabs by its upstream name
+  alias['react-native-bottom-tabs'] =
+    alias['@soundtrackio/react-native-bottom-tabs'];
 
   return {
     presets: ['module:@react-native/babel-preset'],
