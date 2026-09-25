@@ -41,6 +41,7 @@ let package = Package(
                 "SVG",
                 "include",
                 "Bridge",
+                "Tests",
             ]
         ),
         .target(
