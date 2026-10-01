@@ -1,5 +1,11 @@
 # react-native-bottom-tabs
 
+## 1.6.1
+
+### Patch Changes
+
+- [#7](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/pull/7) [`46603cc`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/46603ccd54587cebb4a9e2254fedd2251a56de89) Thanks [@emma-syb](https://github.com/emma-syb)! - Fix a tab's navigation stack freezing mid-transition when the tab is shown again during a push or pop, which on iOS 27 crashes the app the next time the stack is reset
+
 ## 1.6.0
 
 ### Minor Changes
