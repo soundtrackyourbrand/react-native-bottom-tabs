@@ -61,4 +61,33 @@ final class RepresentableViewTests: XCTestCase {
     XCTAssertNil(child.parent)
     XCTAssertIdentical(grandchild.parent, grandchildHost, "controllers below a detached one are its own business")
   }
+
+  func testWaitsForANavigationTransitionInFlightBeforeReHosting() {
+    let window = UIWindow(frame: UIScreen.main.bounds)
+    let discardedHost = UIViewController()
+    window.rootViewController = discardedHost
+    window.isHidden = false
+    let reactView = UIView()
+    discardedHost.view.addSubview(reactView)
+    let navigation = UINavigationController(rootViewController: UIViewController())
+    discardedHost.addChild(navigation)
+    reactView.addSubview(navigation.view)
+    navigation.didMove(toParent: discardedHost)
+    // A navigation controller animates a push only once it has appeared
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+    navigation.pushViewController(UIViewController(), animated: true)
+    XCTAssertNotNil(navigation.transitionCoordinator)
+    let wrapper = UIView()
+
+    RepresentableView.rehost(reactView, in: wrapper)
+
+    XCTAssertIdentical(navigation.parent, discardedHost, "detaching mid-transition leaves the transition unfinished")
+    XCTAssertNotIdentical(reactView.superview, wrapper)
+
+    let rehosted = expectation(for: NSPredicate { _, _ in reactView.superview === wrapper }, evaluatedWith: nil)
+    wait(for: [rehosted], timeout: 5)
+    XCTAssertNil(navigation.parent)
+    XCTAssertNil(navigation.transitionCoordinator)
+    XCTAssertEqual(navigation.viewControllers.count, 2)
+  }
 }
