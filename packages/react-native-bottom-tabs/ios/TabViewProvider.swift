@@ -49,6 +49,7 @@ public final class TabInfo: NSObject {
   func onLongPress(key: String, reactTag: NSNumber?)
   func onTabBarMeasured(height: Int, reactTag: NSNumber?)
   func onLayout(size: CGSize, reactTag: NSNumber?)
+  func onTabBarLayout(frame: CGRect, containerSize: CGSize, reactTag: NSNumber?)
 }
 
 @objc public class TabViewProvider: PlatformView {
@@ -59,6 +60,11 @@ public final class TabInfo: NSObject {
   private var appearanceFixScheduled = false
   private var coalescingKey: UInt16 = 0
   private var iconSize = CGSize(width: 27, height: 27)
+#if !os(macOS)
+  private weak var tabBar: UITabBar?
+  private var reportedTabBarFrame: CGRect?
+  private var reportedContainerSize: CGSize?
+#endif
 
   @objc var onPageSelected: RCTDirectEventBlock?
 
@@ -210,6 +216,30 @@ public final class TabInfo: NSObject {
     super.layoutSubviews()
     setupView()
     ensureHostingControllerAppeared()
+    scheduleTabBarLayoutReport()
+  }
+
+  /**
+   Introspection hands the tab bar over once, and the bar is laid out after
+   this view, so every layout pass of this view reads the bar's frame a
+   run-loop turn later.
+   */
+  private func scheduleTabBarLayoutReport() {
+    DispatchQueue.main.async { [weak self] in
+      self?.reportTabBarLayout()
+    }
+  }
+
+  private func reportTabBarLayout() {
+    guard let tabBar, !tabBar.isHidden, tabBar.window != nil else { return }
+    let frame = tabBar.convert(tabBar.bounds, to: self)
+    let containerSize = bounds.size
+    if frame == reportedTabBarFrame && containerSize == reportedContainerSize {
+      return
+    }
+    reportedTabBarFrame = frame
+    reportedContainerSize = containerSize
+    delegate?.onTabBarLayout(frame: frame, containerSize: containerSize, reactTag: reactTag)
   }
 
   /**
@@ -262,6 +292,9 @@ public final class TabInfo: NSObject {
       self.delegate?.onLayout(size: size, reactTag: self.reactTag)
     } onTabBarMeasured: { height in
       self.delegate?.onTabBarMeasured(height: height, reactTag: self.reactTag)
+    } onTabBarIntrospected: { [weak self] tabBar in
+      self?.tabBar = tabBar
+      self?.scheduleTabBarLayoutReport()
     })
 
     if let hostingController = self.hostingController, let parentViewController = reactViewController() {

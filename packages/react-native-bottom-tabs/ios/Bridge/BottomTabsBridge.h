@@ -11,6 +11,7 @@
 - (void)onLongPressWithKey:(NSString *)key reactTag:(NSNumber *)reactTag;
 - (void)onTabBarMeasuredWithHeight:(NSInteger)height reactTag:(NSNumber *)reactTag;
 - (void)onLayoutWithSize:(CGSize)size reactTag:(NSNumber *)reactTag;
+- (void)onTabBarLayoutWithFrame:(CGRect)frame containerSize:(CGSize)containerSize reactTag:(NSNumber *)reactTag;
 @end
 
 @protocol RNCBottomAccessoryProviderDelegate <NSObject>
