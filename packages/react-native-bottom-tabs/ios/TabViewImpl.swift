@@ -41,6 +41,9 @@ struct TabViewImpl: View {
   var onLongPress: (_ key: String) -> Void
   var onLayout: (_ size: CGSize) -> Void
   var onTabBarMeasured: (_ height: Int) -> Void
+  #if !os(macOS)
+    var onTabBarIntrospected: (_ tabBar: UITabBar) -> Void = { _ in }
+  #endif
 
   var body: some View {
     tabContent
@@ -77,6 +80,7 @@ struct TabViewImpl: View {
               Int(tabController.tabBar.frame.size.height)
             )
           }
+          onTabBarIntrospected(tabController.tabBar)
         #endif
       }
       #if !os(macOS)

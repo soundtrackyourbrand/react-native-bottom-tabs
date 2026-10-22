@@ -288,6 +288,20 @@ NSArray* convertItemsToArray(const std::vector<RNCTabViewItemsStruct>& items) {
   }
 }
 
+- (void)onTabBarLayoutWithFrame:(CGRect)frame containerSize:(CGSize)containerSize reactTag:(NSNumber *)reactTag {
+  auto eventEmitter = std::static_pointer_cast<const RNCTabViewEventEmitter>(_eventEmitter);
+  if (eventEmitter) {
+    eventEmitter->onTabBarLayout(RNCTabViewEventEmitter::OnTabBarLayout {
+      .x = frame.origin.x,
+      .y = frame.origin.y,
+      .width = frame.size.width,
+      .height = frame.size.height,
+      .containerWidth = containerSize.width,
+      .containerHeight = containerSize.height
+    });
+  }
+}
+
 - (void)onLayoutWithSize:(CGSize)size reactTag:(NSNumber *)reactTag {
   auto eventEmitter = std::static_pointer_cast<const RNCTabViewEventEmitter>(_eventEmitter);
   if (eventEmitter) {

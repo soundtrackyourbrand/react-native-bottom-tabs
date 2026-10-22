@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 import type {
   OnNativeLayout,
   OnPageSelectedEventData,
+  OnTabBarLayout,
   OnTabBarMeasured,
   TabViewItems,
 } from './TabViewNativeComponent';
@@ -110,6 +111,11 @@ interface Props<Route extends BaseRoute> {
    * Callback which is called on long press on tab, receives the index of the tab as argument.
    */
   onTabLongPress?: (index: number) => void;
+  /**
+   * Called with the native tab bar's frame, in the tab view's coordinates,
+   * and the tab view's size whenever either changes. iOS only.
+   */
+  onTabBarLayout?: (event: { nativeEvent: OnTabBarLayout }) => void;
   /**
    * Get lazy for the current screen. Uses true by default.
    */

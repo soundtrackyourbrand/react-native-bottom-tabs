@@ -17,6 +17,15 @@ export type OnTabBarMeasured = Readonly<{
   height: Int32;
 }>;
 
+export type OnTabBarLayout = Readonly<{
+  x: Double;
+  y: Double;
+  width: Double;
+  height: Double;
+  containerWidth: Double;
+  containerHeight: Double;
+}>;
+
 export type OnNativeLayout = Readonly<{
   width: Double;
   height: Double;
@@ -45,6 +54,7 @@ export interface TabViewProps extends ViewProps {
   onTabLongPress?: DirectEventHandler<OnPageSelectedEventData>;
   onTabBarMeasured?: DirectEventHandler<OnTabBarMeasured>;
   onNativeLayout?: DirectEventHandler<OnNativeLayout>;
+  onTabBarLayout?: DirectEventHandler<OnTabBarLayout>;
   icons?: ReadonlyArray<ImageSource>;
   focusedIcons?: ReadonlyArray<ImageSource>;
   tabBarHidden?: boolean;
