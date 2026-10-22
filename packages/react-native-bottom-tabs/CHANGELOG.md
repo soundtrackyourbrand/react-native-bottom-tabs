@@ -1,5 +1,15 @@
 # react-native-bottom-tabs
 
+## 1.7.0
+
+### Minor Changes
+
+- [#11](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/pull/11) [`648e25b`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/648e25bf093d4e971d3f99cb253176a9c851bcee) Thanks [@emma-syb](https://github.com/emma-syb)! - Add `onTabBarLayout`, which reports the native tab bar's frame and the tab view's size on iOS whenever either changes
+
+### Patch Changes
+
+- [#9](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/pull/9) [`6a93682`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/6a93682d5bb1174bbbb6bb9fa49926cc8c5cc63a) Thanks [@emma-syb](https://github.com/emma-syb)! - Register the tab view's Fabric component on Android, which rendered it through React Native's legacy view manager interop instead
+
 ## 1.6.1
 
 ### Patch Changes
