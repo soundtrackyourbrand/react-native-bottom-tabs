@@ -8007,8 +8007,12 @@ __metadata:
     typescript: "npm:^5.9.2"
     use-latest-callback: "npm:^0.2.1"
   peerDependencies:
+    "@expo/config-plugins": "*"
     react: "*"
     react-native: "*"
+  peerDependenciesMeta:
+    "@expo/config-plugins":
+      optional: true
   languageName: unknown
   linkType: soft
 
