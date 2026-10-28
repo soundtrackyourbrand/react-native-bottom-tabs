@@ -1,5 +1,11 @@
 # react-native-bottom-tabs
 
+## 1.7.1
+
+### Patch Changes
+
+- [#12](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/pull/12) [`0804f24`](https://github.com/soundtrackyourbrand/react-native-bottom-tabs/commit/0804f24acbbdff08a27c03f7482839c67f833662) Thanks [@emma-syb](https://github.com/emma-syb)! - Declare `@expo/config-plugins`, which the Expo config plugin imports, as an optional peer dependency, so the plugin loads under package managers that do not hoist undeclared dependencies
+
 ## 1.7.0
 
 ### Minor Changes
