@@ -78,8 +78,14 @@
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
+    "@expo/config-plugins": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/config-plugins": {
+      "optional": true
+    }
   },
   "react-native-builder-bob": {
     "source": "src",
